@@ -18,8 +18,16 @@ func dialMongo() *mgo.Session {
 func getMDB() *mgo.Database {
 	db := M.DB(*dbName)
 
-	uc := db.C("tokens")
+	uc := db.C("users")
 	if err := uc.EnsureIndex(mgo.Index{
+		Key:    []string{"email"},
+		Unique: true,
+	}); err != nil {
+		log.Fatalln(err)
+	}
+
+	tc := db.C("tokens")
+	if err := tc.EnsureIndex(mgo.Index{
 		Key:         []string{"created_at"},
 		ExpireAfter: time.Hour * time.Duration(*tokenExpire),
 	}); err != nil {

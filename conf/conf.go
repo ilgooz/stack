@@ -15,9 +15,10 @@ var (
 )
 
 var (
-	Addr string
-	M    *mgo.Session
-	MDB  *mgo.Database
+	Addr          string
+	M             *mgo.Session
+	MDB           *mgo.Database
+	PasswordLevel = 5
 )
 
 func Load() {

@@ -5,8 +5,10 @@ import (
 	"net/http"
 	"strings"
 
+	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
+	"github.com/gorilla/mux"
 	"github.com/ilgooz/cryptoutils"
 	"github.com/ilgooz/form"
 	"github.com/ilgooz/httpres"
@@ -49,7 +51,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hash, err := cryptoutils.Hash(fields.Password, 5)
+	hash, err := cryptoutils.Hash(fields.Password, conf.PasswordLevel)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
@@ -64,6 +66,10 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := conf.MDB.C("users").Insert(&user); err != nil {
+		if mgo.IsDup(err) {
+			cef.Error.SendMessage("this email address already exists", http.StatusBadRequest)
+			return
+		}
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -86,4 +92,25 @@ type CreateUserForm struct {
 	Name     string `form:"as:name"`
 	Email    string `form:"as:email,email,required"`
 	Password string `form:"as:password,min:3,required"`
+}
+
+func GetMeHandler(w http.ResponseWriter, r *http.Request) {
+	user := model.CurrentUser(r)
+	httpres.Json(w, http.StatusCreated, UserResponse{*user})
+}
+
+func GetUserHandler(w http.ResponseWriter, r *http.Request) {
+	id := mux.Vars(r)["id"]
+	var user model.User
+
+	if err := conf.MDB.C("users").FindId(id).One(&user); err != nil {
+		if err == mgo.ErrNotFound {
+			w.WriteHeader(http.StatusNotFound)
+			return
+		}
+		log.Println(err)
+		return
+	}
+
+	httpres.Json(w, http.StatusCreated, UserResponse{user})
 }
