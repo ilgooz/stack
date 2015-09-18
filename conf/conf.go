@@ -12,12 +12,14 @@ var (
 	mongoAddr   = flag.String("mongo", "mongodb://127.0.0.1:27017/stack", "Mongodb Address")
 	dbName      = flag.String("db", "stack", "Database Name")
 	tokenExpire = flag.Int64("expire-token", 3, "Expire User Access Token After Hours")
+	tokenSize   = flag.Int("token-size", 16, "Token Size")
 )
 
 var (
 	Addr          string
 	M             *mgo.Session
 	PasswordLevel = 5
+	TokenSize     = *tokenSize
 )
 
 func Load() {

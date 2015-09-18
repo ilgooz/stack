@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/ilgooz/cryptoutils"
+	"github.com/ilgooz/stack/conf"
 	"gopkg.in/mgo.v2/bson"
 )
 
@@ -18,7 +19,7 @@ func NewToken(userID bson.ObjectId) Token {
 	return Token{
 		ID:        bson.NewObjectId(),
 		UserID:    userID,
-		Token:     cryptoutils.RandToken(16),
+		Token:     cryptoutils.RandToken(conf.TokenSize),
 		CreatedAt: time.Now(),
 	}
 }
