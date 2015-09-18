@@ -7,6 +7,7 @@ A base RESTful API that allows you to easily start to your next project and show
 * Simple user & token api
 * Keep context by *http.Request
 * Authentication via tokens
+- Mongodb with mgo
 * Commandline configuration for the app
 * Versioning over latest git commit hash
 
