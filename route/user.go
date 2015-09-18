@@ -10,6 +10,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/gorilla/mux"
+	"github.com/ilgooz/bsonutils"
 	"github.com/ilgooz/cryptoutils"
 	"github.com/ilgooz/form"
 	"github.com/ilgooz/httpres"
@@ -162,13 +163,19 @@ func GetMeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserHandler(w http.ResponseWriter, r *http.Request) {
-	id := mux.Vars(r)["id"]
+	id, ok := bsonutils.ObjectId(mux.Vars(r)["id"])
+
+	if !ok {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
 	var user model.User
 
 	s := conf.M.Copy()
 	defer s.Close()
 
-	if err := s.DB("").C("users").FindId(bson.ObjectIdHex(id)).One(&user); err != nil {
+	if err := s.DB("").C("users").FindId(id).One(&user); err != nil {
 		if err == mgo.ErrNotFound {
 			w.WriteHeader(http.StatusNotFound)
 			return
