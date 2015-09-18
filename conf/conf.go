@@ -9,7 +9,7 @@ import (
 
 var (
 	addr        = flag.String("addr", ":3000", "Server Address")
-	mongoAddr   = flag.String("mongo", "127.0.0.1:27017", "Mongodb Address")
+	mongoAddr   = flag.String("mongo", "mongodb://127.0.0.1:27017/stack", "Mongodb Address")
 	dbName      = flag.String("db", "stack", "Database Name")
 	tokenExpire = flag.Int64("expire-token", 3, "Expire User Access Token After Hours")
 )
@@ -17,7 +17,6 @@ var (
 var (
 	Addr          string
 	M             *mgo.Session
-	MDB           *mgo.Database
 	PasswordLevel = 5
 )
 
@@ -31,5 +30,5 @@ func Load() {
 	// init configs for global access
 	Addr = *addr
 	M = dialMongo()
-	MDB = getMDB()
+	ensureIndex()
 }

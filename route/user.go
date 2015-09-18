@@ -23,7 +23,10 @@ type UsersResponse struct {
 func ListUsersHandler(w http.ResponseWriter, r *http.Request) {
 	users := []model.User{}
 
-	if err := conf.MDB.C("users").Find(bson.M{}).All(&users); err != nil {
+	s := conf.M.Copy()
+	defer s.Close()
+
+	if err := s.DB("").C("users").Find(bson.M{}).All(&users); err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -65,7 +68,10 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		Hash:  hash,
 	}
 
-	if err := conf.MDB.C("users").Insert(&user); err != nil {
+	s := conf.M.Copy()
+	defer s.Close()
+
+	if err := s.DB("").C("users").Insert(&user); err != nil {
 		if mgo.IsDup(err) {
 			cef.Error.SendMessage("this email address already exists", http.StatusBadRequest)
 			return
@@ -77,7 +83,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	token := model.NewToken(user.ID)
 
-	if err := conf.MDB.C("tokens").Insert(&token); err != nil {
+	if err := s.DB("").C("tokens").Insert(&token); err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -103,7 +109,10 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	var user model.User
 
-	if err := conf.MDB.C("users").FindId(bson.ObjectIdHex(id)).One(&user); err != nil {
+	s := conf.M.Copy()
+	defer s.Close()
+
+	if err := s.DB("").C("users").FindId(bson.ObjectIdHex(id)).One(&user); err != nil {
 		if err == mgo.ErrNotFound {
 			w.WriteHeader(http.StatusNotFound)
 			return

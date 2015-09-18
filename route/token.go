@@ -37,7 +37,10 @@ func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
 
 	var user model.User
 
-	if err := conf.MDB.C("users").Find(bson.M{
+	s := conf.M.Copy()
+	defer s.Close()
+
+	if err := s.DB("").C("users").Find(bson.M{
 		"email": strings.TrimSpace(fields.Email),
 	}).One(&user); err != nil {
 		if err == mgo.ErrNotFound {
@@ -55,7 +58,7 @@ func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token := model.NewToken(user.ID)
-	if err := conf.MDB.C("tokens").Insert(&token); err != nil {
+	if err := s.DB("").C("tokens").Insert(&token); err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return

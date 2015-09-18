@@ -29,8 +29,11 @@ func CurrentUser(r *http.Request) *User {
 func FindUserByToken(t string) (User, bool, error) {
 	var user User
 
+	s := conf.M.Copy()
+	defer s.Close()
+
 	var token Token
-	if err := conf.MDB.C("tokens").Find(bson.M{"token": t}).One(&token); err != nil {
+	if err := s.DB("").C("tokens").Find(bson.M{"token": t}).One(&token); err != nil {
 		if err == mgo.ErrNotFound {
 			return user, false, nil
 		}
@@ -38,7 +41,7 @@ func FindUserByToken(t string) (User, bool, error) {
 		return user, false, err
 	}
 
-	if err := conf.MDB.C("users").FindId(token.UserID).One(&user); err != nil {
+	if err := s.DB("").C("users").FindId(token.UserID).One(&user); err != nil {
 		if err == mgo.ErrNotFound {
 			return user, false, nil
 		}

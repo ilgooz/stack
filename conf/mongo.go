@@ -15,10 +15,11 @@ func dialMongo() *mgo.Session {
 	return mongo
 }
 
-func getMDB() *mgo.Database {
-	db := M.DB(*dbName)
+func ensureIndex() {
+	s := M.Copy()
+	defer s.Close()
 
-	uc := db.C("users")
+	uc := s.DB("").C("users")
 	if err := uc.EnsureIndex(mgo.Index{
 		Key:    []string{"email"},
 		Unique: true,
@@ -26,13 +27,11 @@ func getMDB() *mgo.Database {
 		log.Fatalln(err)
 	}
 
-	tc := db.C("tokens")
+	tc := s.DB("").C("tokens")
 	if err := tc.EnsureIndex(mgo.Index{
 		Key:         []string{"created_at"},
 		ExpireAfter: time.Hour * time.Duration(*tokenExpire),
 	}); err != nil {
 		log.Fatalln(err)
 	}
-
-	return db
 }
