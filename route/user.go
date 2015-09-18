@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
@@ -12,27 +13,81 @@ import (
 	"github.com/ilgooz/cryptoutils"
 	"github.com/ilgooz/form"
 	"github.com/ilgooz/httpres"
+	"github.com/ilgooz/paging"
 	"github.com/ilgooz/stack/conf"
 	model "github.com/ilgooz/stack/model"
 )
 
 type UsersResponse struct {
-	Users []model.User `json:"users"`
+	CurrentPage     int          `json:"current_page"`
+	TotalPagesCount int          `json:"total_pages_count"`
+	Users           []model.User `json:"users"`
 }
 
 func ListUsersHandler(w http.ResponseWriter, r *http.Request) {
-	users := []model.User{}
+	fields := ListUsersForm{}
 
-	s := conf.M.Copy()
-	defer s.Close()
-
-	if err := s.DB("").C("users").Find(bson.M{}).All(&users); err != nil {
+	cef, err := form.Parse(&fields, w, r)
+	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	httpres.Json(w, http.StatusOK, UsersResponse{users})
+	if cef.HasError() {
+		cef.Error.Send(http.StatusBadRequest)
+		return
+	}
+
+	users := []model.User{}
+
+	s := conf.M.Copy()
+	defer s.Close()
+
+	m := bson.M{}
+
+	if fields.Name != "" {
+		m["name"] = fields.Name
+	}
+
+	q := s.DB("").C("users").
+		Find(m).
+		Sort("-created_at")
+
+	totalCount, err := q.Count()
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	p := paging.Paging{
+		Page:  fields.Page,
+		Limit: fields.Limit,
+		Count: totalCount,
+	}.Calc()
+
+	if err = q.
+		Limit(p.Limit).
+		Skip(p.Offset).
+		All(&users); err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	rp := UsersResponse{
+		Users:           users,
+		CurrentPage:     p.Page,
+		TotalPagesCount: p.TotalPages,
+	}
+
+	httpres.Json(w, http.StatusOK, rp)
+}
+
+type ListUsersForm struct {
+	Name  string `form:"as:name"`
+	Page  int    `form:"as:page"`
+	Limit int    `form:"as:limit"`
 }
 
 type UserResponse struct {
@@ -62,10 +117,11 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := model.User{
-		ID:    bson.NewObjectId(),
-		Name:  fields.Name,
-		Email: strings.TrimSpace(fields.Email),
-		Hash:  hash,
+		ID:        bson.NewObjectId(),
+		Name:      fields.Name,
+		Email:     strings.TrimSpace(fields.Email),
+		Hash:      hash,
+		CreatedAt: time.Now(),
 	}
 
 	s := conf.M.Copy()

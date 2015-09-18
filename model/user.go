@@ -3,6 +3,7 @@ package model
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/context"
 	"github.com/ilgooz/stack/conf"
@@ -17,6 +18,7 @@ type User struct {
 	Password    string        `json:"-" bson:"-"`
 	Hash        string        `json:"-"`
 	AccessToken string        `json:"access_token,omitempty" bson:"-"`
+	CreatedAt   time.Time     `json:"-" bson:"created_at"`
 }
 
 func CurrentUser(r *http.Request) *User {
