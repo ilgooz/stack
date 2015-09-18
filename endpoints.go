@@ -33,7 +33,7 @@ func handler() http.Handler {
 
 	r.Methods("GET").Path("/version").Handler(appChain.ThenFunc(VersionHandler))
 
-	// a dummy handler to log all the other requests that directs to not existent endpoints
+	// a dummy handler to log all the other requests that directs to non existent endpoints
 	r.PathPrefix("/").Handler(appChain.Then(http.DefaultServeMux))
 
 	return r
