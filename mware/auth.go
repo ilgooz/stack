@@ -3,7 +3,6 @@ package mware
 import (
 	"net/http"
 
-	"github.com/gorilla/context"
 	"github.com/ilgooz/stack/model"
 )
 
@@ -24,16 +23,20 @@ func SetUser(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := r.Header.Get("X-Auth-Token")
 
-		user, found, err := model.FindUserByToken(token)
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		if !found {
-			context.Set(r, "user", nil)
+		if token == "" {
+			model.SetCurrentUser(r, nil)
 		} else {
-			context.Set(r, "user", &user)
+			user, found, err := model.FindUserByToken(token)
+			if err != nil {
+				w.WriteHeader(http.StatusInternalServerError)
+				return
+			}
+
+			if !found {
+				model.SetCurrentUser(r, nil)
+			} else {
+				model.SetCurrentUser(r, &user)
+			}
 		}
 
 		h.ServeHTTP(w, r)

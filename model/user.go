@@ -28,6 +28,10 @@ func CurrentUser(r *http.Request) *User {
 	return nil
 }
 
+func SetCurrentUser(r *http.Request, u *User) {
+	context.Set(r, "user", u)
+}
+
 func FindUserByToken(t string) (User, bool, error) {
 	var user User
 
