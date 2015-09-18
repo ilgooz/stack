@@ -96,7 +96,7 @@ type CreateUserForm struct {
 
 func GetMeHandler(w http.ResponseWriter, r *http.Request) {
 	user := model.CurrentUser(r)
-	httpres.Json(w, http.StatusCreated, UserResponse{*user})
+	httpres.Json(w, http.StatusOK, UserResponse{*user})
 }
 
 func GetUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -112,5 +112,5 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httpres.Json(w, http.StatusCreated, UserResponse{user})
+	httpres.Json(w, http.StatusOK, UserResponse{user})
 }
