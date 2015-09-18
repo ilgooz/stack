@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"github.com/ilgooz/stack/mware"
 	"github.com/ilgooz/stack/route"
@@ -10,14 +11,20 @@ import (
 )
 
 var (
-	appChain  = alice.New(mware.Logging, mware.Cors)
+	appChain = alice.New(
+		context.ClearHandler,
+		mware.Logging,
+		mware.Cors,
+		mware.SetUser,
+	)
+
 	authChain = appChain.Append(mware.Auth)
 )
 
 func handler() http.Handler {
 	r := mux.NewRouter()
 
-	r.Methods("POST").Path("/users").Handler(authChain.ThenFunc(route.CreateUserHandler))
+	r.Methods("POST").Path("/users").Handler(appChain.ThenFunc(route.CreateUserHandler))
 	r.Methods("GET").Path("/users").Handler(authChain.ThenFunc(route.ListUsersHandler))
 
 	r.Methods("GET").Path("/version").Handler(appChain.ThenFunc(VersionHandler))

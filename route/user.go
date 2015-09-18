@@ -69,6 +69,16 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	token := model.NewToken(user.ID)
+
+	if err := conf.MDB.C("tokens").Insert(&token); err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	user.AccessToken = token.Token
+
 	httpres.Json(w, http.StatusCreated, UserResponse{user})
 }
 
