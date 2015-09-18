@@ -9,12 +9,14 @@ import (
 
 var (
 	addr      = flag.String("addr", ":3000", "Server Address")
-	mongoAddr = flag.String("mongo", ":3000", "Mongodb Address")
+	mongoAddr = flag.String("mongo", "127.0.0.1:27017", "Mongodb Address")
+	db        = flag.String("db", "stack", "Database Name")
 )
 
 var (
-	Addr  string
-	Mongo *mgo.Session
+	Addr string
+	M    *mgo.Session
+	MDB  *mgo.Database
 )
 
 func Load() {
@@ -26,10 +28,6 @@ func Load() {
 
 	// init configs for global access
 	Addr = *addr
-
-	// var err error
-	// Mongo, err = mgo.Dial(*mongoAddr)
-	// if err != nil {
-	// 	log.Fatalln(err)
-	// }
+	M = dialMongo()
+	MDB = M.DB(*db)
 }
