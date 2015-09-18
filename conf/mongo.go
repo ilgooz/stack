@@ -19,7 +19,9 @@ func ensureIndex() {
 	s := M.Copy()
 	defer s.Close()
 
+	// users indexes
 	uc := s.DB("").C("users")
+
 	if err := uc.EnsureIndex(mgo.Index{
 		Key:    []string{"email"},
 		Unique: true,
@@ -27,7 +29,9 @@ func ensureIndex() {
 		log.Fatalln(err)
 	}
 
+	// token index
 	tc := s.DB("").C("tokens")
+
 	if err := tc.EnsureIndex(mgo.Index{
 		Key:         []string{"created_at"},
 		ExpireAfter: time.Hour * time.Duration(*tokenExpire),

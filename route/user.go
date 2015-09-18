@@ -48,15 +48,15 @@ func ListUsersHandler(w http.ResponseWriter, r *http.Request) {
 	m := bson.M{}
 
 	if fields.Name != "" {
-		m["name"] = fields.Name
+		//todo: do full text search instead
+		m["name"] = bson.RegEx{fields.Name, "i"}
 	}
 
-	q := s.DB("").C("users").
-		Find(m).
-		Sort("-created_at")
+	q := s.DB("").C("users").Find(m)
 
 	totalCount, err := q.Count()
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -70,6 +70,7 @@ func ListUsersHandler(w http.ResponseWriter, r *http.Request) {
 	if err = q.
 		Limit(p.Limit).
 		Skip(p.Offset).
+		Sort("-created_at").
 		All(&users); err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
