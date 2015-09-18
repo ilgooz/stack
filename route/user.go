@@ -103,7 +103,7 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 	id := mux.Vars(r)["id"]
 	var user model.User
 
-	if err := conf.MDB.C("users").FindId(id).One(&user); err != nil {
+	if err := conf.MDB.C("users").FindId(bson.ObjectIdHex(id)).One(&user); err != nil {
 		if err == mgo.ErrNotFound {
 			w.WriteHeader(http.StatusNotFound)
 			return

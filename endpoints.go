@@ -26,7 +26,7 @@ func handler() http.Handler {
 
 	r.Methods("POST").Path("/users").Handler(appChain.ThenFunc(route.CreateUserHandler))
 	r.Methods("GET").Path("/users").Handler(authChain.ThenFunc(route.ListUsersHandler))
-	r.Methods("GET").Path("/users/{id:[0-9]+}").Handler(authChain.ThenFunc(route.GetUserHandler))
+	r.Methods("GET").Path("/users/{id}").Handler(authChain.ThenFunc(route.GetUserHandler))
 	r.Methods("GET").Path("/me").Handler(authChain.ThenFunc(route.GetMeHandler))
 
 	r.Methods("POST").Path("/tokens").Handler(appChain.ThenFunc(route.CreateTokenHandler))
