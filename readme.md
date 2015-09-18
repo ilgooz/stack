@@ -16,4 +16,4 @@ A base RESTful API that allows you to easily start to your next project and show
 
 ### Contribute
 * Share your ideas by opening new issues
-* Feel free to ask for future requests
+* Feel free to ask for feature requests
