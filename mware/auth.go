@@ -3,7 +3,6 @@ package mware
 import (
 	"net/http"
 
-	"github.com/ilgooz/stack/conf"
 	"github.com/ilgooz/stack/model"
 )
 
@@ -24,7 +23,7 @@ func SetUser(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := r.Header.Get("X-Auth-Token")
 
-		if len(token) != conf.TokenSize {
+		if token == "" {
 			model.SetCurrentUser(r, nil)
 		} else {
 			user, found, err := model.FindUserByToken(token)
