@@ -15,6 +15,7 @@ var (
 		context.ClearHandler,
 		mware.Logging,
 		mware.Cors,
+		mware.Mongo,
 		mware.SetUser,
 	)
 
