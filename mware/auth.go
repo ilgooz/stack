@@ -9,7 +9,7 @@ import (
 
 func Auth(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user := model.CurrentUser(r)
+		user := ctx.CurrentUser(r)
 
 		if user != nil {
 			h.ServeHTTP(w, r)
@@ -25,7 +25,7 @@ func SetUser(h http.Handler) http.Handler {
 		token := r.Header.Get("X-Auth-Token")
 
 		if token == "" {
-			model.SetCurrentUser(r, nil)
+			ctx.SetCurrentUser(r, nil)
 		} else {
 			user, found, err := model.FindUserByToken(token, ctx.M(r))
 			if err != nil {
@@ -34,9 +34,9 @@ func SetUser(h http.Handler) http.Handler {
 			}
 
 			if !found {
-				model.SetCurrentUser(r, nil)
+				ctx.SetCurrentUser(r, nil)
 			} else {
-				model.SetCurrentUser(r, &user)
+				ctx.SetCurrentUser(r, &user)
 			}
 		}
 

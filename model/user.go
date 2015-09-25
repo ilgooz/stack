@@ -2,10 +2,8 @@ package model
 
 import (
 	"log"
-	"net/http"
 	"time"
 
-	"github.com/gorilla/context"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -18,17 +16,6 @@ type User struct {
 	Hash        string        `json:"-"`
 	AccessToken string        `json:"access_token,omitempty" bson:"-"`
 	CreatedAt   time.Time     `json:"-" bson:"created_at"`
-}
-
-func CurrentUser(r *http.Request) *User {
-	if user := context.Get(r, "user"); user != nil {
-		return user.(*User)
-	}
-	return nil
-}
-
-func SetCurrentUser(r *http.Request, u *User) {
-	context.Set(r, "user", u)
 }
 
 func FindUserByToken(t string, m *mgo.Session) (User, bool, error) {
