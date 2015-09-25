@@ -2,7 +2,6 @@ package conf
 
 import (
 	"log"
-	"time"
 
 	"gopkg.in/mgo.v2"
 )
@@ -34,7 +33,7 @@ func ensureIndex() {
 
 	if err := tc.EnsureIndex(mgo.Index{
 		Key:         []string{"created_at"},
-		ExpireAfter: time.Hour * time.Duration(*tokenExpire),
+		ExpireAfter: *tokenExpire,
 	}); err != nil {
 		log.Fatalln(err)
 	}
