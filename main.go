@@ -1,10 +1,10 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
+	"github.com/facebookgo/grace/gracehttp"
 	"github.com/ilgooz/stack/conf"
 )
 
@@ -14,6 +14,9 @@ func main() {
 }
 
 func run() {
-	fmt.Println(fmt.Sprintf("server listening at %s", conf.Addr))
-	log.Fatalln(http.ListenAndServe(conf.Addr, handler()))
+	server := http.Server{
+		Addr:    conf.Addr,
+		Handler: handler(),
+	}
+	log.Fatalln(gracehttp.Serve(&server))
 }
