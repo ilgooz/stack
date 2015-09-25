@@ -19,7 +19,7 @@ var (
 	Addr          string
 	M             *mgo.Session
 	PasswordLevel = 5
-	TokenSize     = *tokenSize
+	TokenSize     int
 )
 
 func Load() {
@@ -31,6 +31,7 @@ func Load() {
 
 	// init configs for global access
 	Addr = *addr
+	TokenSize = *tokenSize
 	M = dialMongo()
 	ensureIndex()
 }
