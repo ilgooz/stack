@@ -159,9 +159,9 @@ func GetMeHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetUserHandler(w http.ResponseWriter, r *http.Request) {
-	id, ok := bsonutils.ObjectId(mux.Vars(r)["id"])
+	id, err := bsonutils.ObjectId(mux.Vars(r)["id"])
 
-	if !ok {
+	if err != nil {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
