@@ -16,12 +16,12 @@ import (
 	"github.com/ilgooz/stack/model"
 )
 
-type TokenResponse struct {
+type tokenResponse struct {
 	AccessToken string `json:"access_token"`
 }
 
 func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
-	fields := CreateTokenForm{}
+	fields := createTokenForm{}
 
 	cef, err := form.Parse(&fields, w, r)
 	if err != nil {
@@ -61,10 +61,10 @@ func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httpres.Json(w, http.StatusCreated, TokenResponse{token.Token})
+	httpres.Json(w, http.StatusCreated, tokenResponse{token.Token})
 }
 
-type CreateTokenForm struct {
+type createTokenForm struct {
 	Email    string `form:"as:email,required"`
 	Password string `form:"as:password,required"`
 }

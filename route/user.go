@@ -20,14 +20,14 @@ import (
 	model "github.com/ilgooz/stack/model"
 )
 
-type UsersResponse struct {
+type usersResponse struct {
 	CurrentPage     int          `json:"current_page"`
 	TotalPagesCount int          `json:"total_pages_count"`
 	Users           []model.User `json:"users"`
 }
 
 func ListUsersHandler(w http.ResponseWriter, r *http.Request) {
-	fields := ListUsersForm{}
+	fields := listUsersForm{}
 
 	cef, err := form.Parse(&fields, w, r)
 	if err != nil {
@@ -75,7 +75,7 @@ func ListUsersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rp := UsersResponse{
+	rp := usersResponse{
 		Users:           users,
 		CurrentPage:     p.Page,
 		TotalPagesCount: p.TotalPages,
@@ -84,18 +84,18 @@ func ListUsersHandler(w http.ResponseWriter, r *http.Request) {
 	httpres.Json(w, http.StatusOK, rp)
 }
 
-type ListUsersForm struct {
+type listUsersForm struct {
 	Name  string `form:"as:name"`
 	Page  int    `form:"as:page"`
 	Limit int    `form:"as:limit"`
 }
 
-type UserResponse struct {
+type userResponse struct {
 	User model.User `json:"user"`
 }
 
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
-	fields := CreateUserForm{}
+	fields := createUserForm{}
 
 	cef, err := form.Parse(&fields, w, r)
 	if err != nil {
@@ -144,10 +144,10 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	user.AccessToken = token.Token
 
-	httpres.Json(w, http.StatusCreated, UserResponse{user})
+	httpres.Json(w, http.StatusCreated, userResponse{user})
 }
 
-type CreateUserForm struct {
+type createUserForm struct {
 	Name     string `form:"as:name"`
 	Email    string `form:"as:email,email,required"`
 	Password string `form:"as:password,min:3,required"`
@@ -155,7 +155,7 @@ type CreateUserForm struct {
 
 func GetMeHandler(w http.ResponseWriter, r *http.Request) {
 	user := ctx.CurrentUser(r)
-	httpres.Json(w, http.StatusOK, UserResponse{*user})
+	httpres.Json(w, http.StatusOK, userResponse{*user})
 }
 
 func GetUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -177,5 +177,5 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	httpres.Json(w, http.StatusOK, UserResponse{user})
+	httpres.Json(w, http.StatusOK, userResponse{user})
 }
