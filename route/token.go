@@ -12,7 +12,7 @@ import (
 
 	"github.com/ilgooz/form"
 	"github.com/ilgooz/httpres"
-	"github.com/ilgooz/stack/conf"
+	"github.com/ilgooz/stack/ctx"
 	"github.com/ilgooz/stack/model"
 )
 
@@ -37,10 +37,7 @@ func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
 
 	var user model.User
 
-	s := conf.M.Copy()
-	defer s.Close()
-
-	if err := s.DB("").C("users").Find(bson.M{
+	if err := ctx.M(r).DB("").C("users").Find(bson.M{
 		"email": strings.TrimSpace(fields.Email),
 	}).One(&user); err != nil {
 		if err == mgo.ErrNotFound {
@@ -58,7 +55,7 @@ func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token := model.NewToken(user.ID)
-	if err := s.DB("").C("tokens").Insert(&token); err != nil {
+	if err := ctx.M(r).DB("").C("tokens").Insert(&token); err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/gorilla/context"
-	"github.com/ilgooz/stack/conf"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -32,14 +31,11 @@ func SetCurrentUser(r *http.Request, u *User) {
 	context.Set(r, "user", u)
 }
 
-func FindUserByToken(t string) (User, bool, error) {
+func FindUserByToken(t string, m *mgo.Session) (User, bool, error) {
 	var user User
 
-	s := conf.M.Copy()
-	defer s.Close()
-
 	var token Token
-	if err := s.DB("").C("tokens").Find(bson.M{"token": t}).One(&token); err != nil {
+	if err := m.DB("").C("tokens").Find(bson.M{"token": t}).One(&token); err != nil {
 		if err == mgo.ErrNotFound {
 			return user, false, nil
 		}
@@ -47,7 +43,7 @@ func FindUserByToken(t string) (User, bool, error) {
 		return user, false, err
 	}
 
-	if err := s.DB("").C("users").FindId(token.UserID).One(&user); err != nil {
+	if err := m.DB("").C("users").FindId(token.UserID).One(&user); err != nil {
 		if err == mgo.ErrNotFound {
 			return user, false, nil
 		}

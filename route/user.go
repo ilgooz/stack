@@ -16,6 +16,7 @@ import (
 	"github.com/ilgooz/httpres"
 	"github.com/ilgooz/paging"
 	"github.com/ilgooz/stack/conf"
+	"github.com/ilgooz/stack/ctx"
 	model "github.com/ilgooz/stack/model"
 )
 
@@ -42,9 +43,6 @@ func ListUsersHandler(w http.ResponseWriter, r *http.Request) {
 
 	users := []model.User{}
 
-	s := conf.M.Copy()
-	defer s.Close()
-
 	m := bson.M{}
 
 	if fields.Name != "" {
@@ -52,7 +50,7 @@ func ListUsersHandler(w http.ResponseWriter, r *http.Request) {
 		m["name"] = bson.RegEx{fields.Name, "i"}
 	}
 
-	q := s.DB("").C("users").Find(m)
+	q := ctx.M(r).DB("").C("users").Find(m)
 
 	totalCount, err := q.Count()
 	if err != nil {
@@ -126,10 +124,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		CreatedAt: time.Now(),
 	}
 
-	s := conf.M.Copy()
-	defer s.Close()
-
-	if err := s.DB("").C("users").Insert(&user); err != nil {
+	if err := ctx.M(r).DB("").C("users").Insert(&user); err != nil {
 		if mgo.IsDup(err) {
 			cef.Error.SendMessage("this email address already exists", http.StatusBadRequest)
 			return
@@ -141,7 +136,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	token := model.NewToken(user.ID)
 
-	if err := s.DB("").C("tokens").Insert(&token); err != nil {
+	if err := ctx.M(r).DB("").C("tokens").Insert(&token); err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -173,10 +168,7 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	var user model.User
 
-	s := conf.M.Copy()
-	defer s.Close()
-
-	if err := s.DB("").C("users").FindId(id).One(&user); err != nil {
+	if err := ctx.M(r).DB("").C("users").FindId(id).One(&user); err != nil {
 		if err == mgo.ErrNotFound {
 			w.WriteHeader(http.StatusNotFound)
 			return
