@@ -1,5 +1,5 @@
 # Stack
-A base RESTful API that allows you to easily start to your next project and shows you some of the best practices about building RESTful APIs in Go.
+A basic RESTful API project that allows you to easily get started your next project and shows you some of the best practices about building RESTful APIs in Go.
 
 ## What is included?
 * Proper using of middlewares
