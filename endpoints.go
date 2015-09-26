@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	"github.com/NYTimes/gziphandler"
 	"github.com/gorilla/context"
 	"github.com/gorilla/mux"
 	"github.com/ilgooz/stack/mware"
@@ -12,9 +13,10 @@ import (
 
 var (
 	appChain = alice.New(
-		context.ClearHandler,
 		mware.Logging,
 		mware.Cors,
+		gziphandler.GzipHandler,
+		context.ClearHandler,
 		mware.Mongo,
 		mware.SetUser,
 	)
