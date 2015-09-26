@@ -14,13 +14,13 @@
 * Versioning over latest git commit hash
 
 ### Usage
-###### Run
+##### Run
   make run
-###### Run via Docker Compose
+##### Run via Docker Compose
   docker-compose up
-###### Stop
+##### Stop
   ^C *ctrl+c*
-###### Hard Stop
+##### Hard Stop
   ^C^C *twice*
 
 ### Out of The Box Endpoints
