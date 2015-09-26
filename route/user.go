@@ -174,6 +174,7 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
