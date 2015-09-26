@@ -1,0 +1,17 @@
+stack:
+  build: .
+  ports:
+    - "3000:3000"
+  links:
+    - mongo
+
+mongo:
+  image: mongo
+  command: "--smallfiles"
+  volumes_from:
+    - mongo_data
+
+mongo_data:
+  image: busybox
+  volumes:
+    - /data/db

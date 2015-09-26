@@ -1,5 +1,5 @@
 # Stack [![GoDoc](https://godoc.org/github.com/golang/gddo?status.svg)](http://godoc.org/github.com/ilgooz/stack)
-> Stack is a lightweight not-a-framework RESTful API that allows you to easily get started with your next project and shows to you some of the best practices about building RESTful APIs in Go.
+> Stack is a lightweight not-a-framework RESTful API that allows you to easily get started with your next project and shows some of the best practices about building RESTful APIs in Go.
 
 ![](https://cdn.rawgit.com/ilgooz/stack/master/logo.jpg)
 
@@ -8,14 +8,20 @@
 * Learn how to organize your files & folders structure
 * User & Token APIs out of the box
 * Authentication via tokens
-* Keep context by *http.Request via gorilla/context
-* MongoDB via go-mgo/mgo
+* Keep context by *http.Request with gorilla/context
+* MongoDB with go-mgo/mgo
 * Command-line configuration for the app
 * Versioning over latest git commit hash
 
 ### Usage
-* to start the server simply: *make run*
-* to stop simply: *^C^C* (twice)
+###### Run
+  make run
+###### Run via Docker Compose
+  docker-compose up
+###### Stop
+  ^C *ctrl+c*
+###### Hard Stop
+  ^C^C *twice*
 
 ### Out of The Box Endpoints
 * post /users
