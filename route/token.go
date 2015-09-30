@@ -10,10 +10,11 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
-	"github.com/ilgooz/form"
+	"github.com/ilgooz/eres"
 	"github.com/ilgooz/httpres"
 	"github.com/ilgooz/stack/ctx"
 	"github.com/ilgooz/stack/model"
+	"github.com/ilgooz/stack/util"
 )
 
 type tokenResponse struct {
@@ -23,15 +24,7 @@ type tokenResponse struct {
 func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
 	fields := createTokenForm{}
 
-	cef, err := form.Parse(&fields, w, r)
-	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	if cef.HasError() {
-		cef.Error.Send(http.StatusBadRequest)
+	if util.ParseForm(w, r, &fields) {
 		return
 	}
 
@@ -41,16 +34,17 @@ func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
 		"email": strings.TrimSpace(fields.Email),
 	}).One(&user); err != nil {
 		if err == mgo.ErrNotFound {
-			cef.Error.SendMessage("bad credentials", http.StatusBadRequest)
+			eres.New(w).SetMessage("bad credentials").Send()
 			return
 		}
+
 		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Hash), []byte(fields.Password)); err != nil {
-		cef.Error.SendMessage("bad credentials", http.StatusBadRequest)
+		eres.New(w).SetMessage("bad credentials").Send()
 		return
 	}
 
@@ -65,6 +59,6 @@ func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type createTokenForm struct {
-	Email    string `form:"as:email,required"`
-	Password string `form:"as:password,required"`
+	Email    string `schema:"email" validate:"required"`
+	Password string `schema:"password" validate:"required"`
 }

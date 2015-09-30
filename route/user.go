@@ -12,12 +12,13 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/ilgooz/bsonutils"
 	"github.com/ilgooz/cryptoutils"
-	"github.com/ilgooz/form"
+	"github.com/ilgooz/eres"
 	"github.com/ilgooz/httpres"
 	"github.com/ilgooz/paging"
 	"github.com/ilgooz/stack/conf"
 	"github.com/ilgooz/stack/ctx"
 	model "github.com/ilgooz/stack/model"
+	"github.com/ilgooz/stack/util"
 )
 
 type usersResponse struct {
@@ -29,15 +30,7 @@ type usersResponse struct {
 func ListUsersHandler(w http.ResponseWriter, r *http.Request) {
 	fields := listUsersForm{}
 
-	cef, err := form.Parse(&fields, w, r)
-	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	if cef.HasError() {
-		cef.Error.Send(http.StatusBadRequest)
+	if util.ParseForm(w, r, &fields) {
 		return
 	}
 
@@ -85,9 +78,9 @@ func ListUsersHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type listUsersForm struct {
-	Name  string `form:"as:name"`
-	Page  int    `form:"as:page"`
-	Limit int    `form:"as:limit"`
+	Name  string `schema:"name"`
+	Page  int    `schema:"page"`
+	Limit int    `schema:"limit"`
 }
 
 type userResponse struct {
@@ -97,15 +90,7 @@ type userResponse struct {
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	fields := createUserForm{}
 
-	cef, err := form.Parse(&fields, w, r)
-	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	if cef.HasError() {
-		cef.Error.Send(http.StatusBadRequest)
+	if util.ParseForm(w, r, &fields) {
 		return
 	}
 
@@ -126,9 +111,10 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err := ctx.M(r).DB("").C("users").Insert(&user); err != nil {
 		if mgo.IsDup(err) {
-			cef.Error.SendMessage("this email address already exists", http.StatusBadRequest)
+			eres.New(w).AddField("email", "already exists").Send()
 			return
 		}
+
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -148,9 +134,9 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 type createUserForm struct {
-	Name     string `form:"as:name"`
-	Email    string `form:"as:email,email,required"`
-	Password string `form:"as:password,min:3,required"`
+	Name     string `schema:"name"`
+	Email    string `schema:"email" validate:"email,required"`
+	Password string `schema:"password" validate:"min=3,required"`
 }
 
 func GetMeHandler(w http.ResponseWriter, r *http.Request) {
