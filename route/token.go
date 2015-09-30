@@ -11,10 +11,10 @@ import (
 	"gopkg.in/mgo.v2/bson"
 
 	"github.com/ilgooz/eres"
+	"github.com/ilgooz/formutils"
 	"github.com/ilgooz/httpres"
 	"github.com/ilgooz/stack/ctx"
 	"github.com/ilgooz/stack/model"
-	"github.com/ilgooz/stack/util"
 )
 
 type tokenResponse struct {
@@ -24,7 +24,7 @@ type tokenResponse struct {
 func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
 	fields := createTokenForm{}
 
-	if util.ParseForm(w, r, &fields) {
+	if formutils.ParseSend(w, r, &fields) {
 		return
 	}
 

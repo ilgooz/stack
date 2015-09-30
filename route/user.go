@@ -13,12 +13,12 @@ import (
 	"github.com/ilgooz/bsonutils"
 	"github.com/ilgooz/cryptoutils"
 	"github.com/ilgooz/eres"
+	"github.com/ilgooz/formutils"
 	"github.com/ilgooz/httpres"
 	"github.com/ilgooz/paging"
 	"github.com/ilgooz/stack/conf"
 	"github.com/ilgooz/stack/ctx"
 	model "github.com/ilgooz/stack/model"
-	"github.com/ilgooz/stack/util"
 )
 
 type usersResponse struct {
@@ -30,7 +30,7 @@ type usersResponse struct {
 func ListUsersHandler(w http.ResponseWriter, r *http.Request) {
 	fields := listUsersForm{}
 
-	if util.ParseForm(w, r, &fields) {
+	if formutils.ParseSend(w, r, &fields) {
 		return
 	}
 
@@ -91,7 +91,7 @@ type userResponse struct {
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	fields := createUserForm{}
 
-	if util.ParseForm(w, r, &fields) {
+	if formutils.ParseSend(w, r, &fields) {
 		return
 	}
 
