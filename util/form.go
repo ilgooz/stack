@@ -9,7 +9,7 @@ import (
 )
 
 func ParseForm(w http.ResponseWriter, r *http.Request, out interface{}) (invalid bool) {
-	invalids, err := formutils.ParseForm(r, out)
+	invalids, err := formutils.Parse(r, out)
 
 	if err != nil {
 		log.Println(err)
