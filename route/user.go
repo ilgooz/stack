@@ -84,7 +84,8 @@ type listUsersForm struct {
 }
 
 type userResponse struct {
-	User model.User `json:"user"`
+	User        model.User `json:"user"`
+	AccessToken string     `json:"access_token,omitempty"`
 }
 
 func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -128,9 +129,12 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user.AccessToken = token.Token
+	rp := userResponse{
+		User:        user,
+		AccessToken: token.Token,
+	}
 
-	httpres.Json(w, http.StatusCreated, userResponse{user})
+	httpres.Json(w, http.StatusCreated, rp)
 }
 
 type createUserForm struct {
@@ -141,7 +145,7 @@ type createUserForm struct {
 
 func GetMeHandler(w http.ResponseWriter, r *http.Request) {
 	user := ctx.CurrentUser(r)
-	httpres.Json(w, http.StatusOK, userResponse{*user})
+	httpres.Json(w, http.StatusOK, userResponse{User: *user})
 }
 
 func GetUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -159,10 +163,11 @@ func GetUserHandler(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusNotFound)
 			return
 		}
+
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	httpres.Json(w, http.StatusOK, userResponse{user})
+	httpres.Json(w, http.StatusOK, userResponse{User: user})
 }
