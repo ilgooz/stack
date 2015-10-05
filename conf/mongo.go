@@ -32,7 +32,7 @@ func ensureIndex() {
 	tc := s.DB("").C("tokens")
 
 	if err := tc.EnsureIndex(mgo.Index{
-		Key:         []string{"created_at"},
+		Key:         []string{"updated_at"},
 		ExpireAfter: *tokenExpire,
 	}); err != nil {
 		log.Fatalln(err)
