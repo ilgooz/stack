@@ -49,6 +49,7 @@ func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	token := model.NewToken(user.ID)
+
 	if err := ctx.M(r).DB("").C("tokens").Insert(&token); err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)

@@ -9,10 +9,11 @@
 * User & Token APIs out of the box
 * Authentication via tokens
 * Keep context by *http.Request with gorilla/context
-* Form parsing & validation
+* Form parsing with gorilla/schema & validation with go-playground/validator
 * MongoDB with go-mgo/mgo
 * Command-line configuration
-* Versioning over latest git commit hash
+* App versioning over latest git commit hash
+* ...
 
 ### Usage
 ##### Run

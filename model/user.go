@@ -18,9 +18,11 @@ type User struct {
 }
 
 func FindUserByToken(t string, m *mgo.Session) (User, bool, error) {
-	var user User
+	var (
+		user  User
+		token Token
+	)
 
-	var token Token
 	if err := m.DB("").C("tokens").Find(bson.M{"token": t}).One(&token); err != nil {
 		if err == mgo.ErrNotFound {
 			return user, false, nil
