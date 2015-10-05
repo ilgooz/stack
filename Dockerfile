@@ -1,10 +1,12 @@
 FROM golang
 
-RUN go get github.com/ilgooz/stack
+WORKDIR /go/src/github.com/ilgooz/stack
 
-RUN cd /go/src/github.com/ilgooz/stack && make build
+ADD . .
 
-ENTRYPOINT /go/src/github.com/ilgooz/stack/stack \
+RUN go get ./... && make build
+
+ENTRYPOINT ./stack \
   --mongo mongodb://mongo:27017/stack
 
 EXPOSE 3000
