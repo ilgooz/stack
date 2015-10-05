@@ -103,11 +103,11 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user := model.User{
-		ID:        bson.NewObjectId(),
-		Name:      fields.Name,
-		Email:     strings.TrimSpace(fields.Email),
-		Hash:      hash,
-		CreatedAt: time.Now(),
+		ID:           bson.NewObjectId(),
+		Name:         fields.Name,
+		Email:        strings.TrimSpace(fields.Email),
+		PasswordHash: hash,
+		CreatedAt:    time.Now(),
 	}
 
 	if err := ctx.M(r).DB("").C("users").Insert(&user); err != nil {

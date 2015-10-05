@@ -9,12 +9,11 @@ import (
 )
 
 type User struct {
-	ID        bson.ObjectId `json:"id" bson:"_id,omitempty"`
-	Name      string        `json:"name"`
-	Email     string        `json:"email"`
-	Password  string        `json:"-" bson:"-"`
-	Hash      string        `json:"-"`
-	CreatedAt time.Time     `json:"-" bson:"created_at"`
+	ID           bson.ObjectId `json:"id" bson:"_id,omitempty"`
+	Name         string        `json:"name"`
+	Email        string        `json:"email"`
+	PasswordHash string        `json:"-" bson:"password_hash"`
+	CreatedAt    time.Time     `json:"-" bson:"created_at"`
 }
 
 func FindUserByToken(t string, m *mgo.Session) (user User, found bool, err error) {

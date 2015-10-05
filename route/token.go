@@ -43,7 +43,7 @@ func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Hash), []byte(fields.Password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(fields.Password)); err != nil {
 		eres.New(w).SetMessage("bad credentials").Send()
 		return
 	}
