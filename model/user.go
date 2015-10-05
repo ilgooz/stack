@@ -1,7 +1,6 @@
 package model
 
 import (
-	"log"
 	"time"
 
 	"gopkg.in/mgo.v2"
@@ -24,23 +23,21 @@ func FindUserByToken(t string, m *mgo.Session) (user User, found bool, err error
 			return user, false, nil
 		}
 
-		log.Println(err)
 		return user, false, err
 	}
-
-	// extend token
-	defer m.DB("").C("tokens").UpdateId(token.ID, bson.M{
-		"$set": bson.M{"updated_at": time.Now()},
-	})
 
 	if err := m.DB("").C("users").FindId(token.UserID).One(&user); err != nil {
 		if err == mgo.ErrNotFound {
 			return user, false, nil
 		}
 
-		log.Println(err)
 		return user, false, err
 	}
 
-	return user, true, nil
+	// extend token
+	err = m.DB("").C("tokens").UpdateId(token.ID, bson.M{
+		"$set": bson.M{"updated_at": time.Now()},
+	})
+
+	return user, true, err
 }

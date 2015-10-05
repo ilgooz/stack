@@ -1,6 +1,7 @@
 package mware
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/ilgooz/stack/ctx"
@@ -30,6 +31,7 @@ func SetUser(h http.Handler) http.Handler {
 			user, found, err := model.FindUserByToken(token, ctx.M(r))
 
 			if err != nil {
+				log.Println(err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}

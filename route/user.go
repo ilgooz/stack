@@ -34,8 +34,6 @@ func ListUsersHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	users := []model.User{}
-
 	m := bson.M{}
 
 	if fields.Name != "" {
@@ -57,6 +55,8 @@ func ListUsersHandler(w http.ResponseWriter, r *http.Request) {
 		Limit: fields.Limit,
 		Count: totalCount,
 	}.Calc()
+
+	users := []model.User{}
 
 	if err = q.
 		Limit(p.Limit).
