@@ -1,5 +1,5 @@
 # Stack [![GoDoc](https://godoc.org/github.com/golang/gddo?status.svg)](http://godoc.org/github.com/ilgooz/stack)
-> Stack is a lightweight not-a-framework RESTful API that allows you to easily get started with your next project and shows some of the best practices about building RESTful APIs in Go.
+> Stack is a lightweight not-a-framework RESTful API that allow you to easily get started with your next project and show some of the *my* best practices about building RESTful APIs in Go.
 
 ![](https://cdn.rawgit.com/ilgooz/stack/master/logo.jpg)
 
