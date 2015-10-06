@@ -10,6 +10,7 @@ import (
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 
+	"github.com/gorilla/mux"
 	"github.com/ilgooz/eres"
 	"github.com/ilgooz/formutils"
 	"github.com/ilgooz/httpres"
@@ -48,7 +49,7 @@ func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := model.NewToken(user.ID)
+	token := model.NewToken(user.ID, fields.Forever)
 
 	if err := ctx.M(r).DB("").C("tokens").Insert(&token); err != nil {
 		log.Println(err)
@@ -62,4 +63,35 @@ func CreateTokenHandler(w http.ResponseWriter, r *http.Request) {
 type createTokenForm struct {
 	Email    string `schema:"email" validate:"required"`
 	Password string `schema:"password" validate:"required"`
+	Forever  bool   `schema:"forever"`
+}
+
+func DeleteTokenHandler(w http.ResponseWriter, r *http.Request) {
+	user := ctx.CurrentUser(r)
+	t := mux.Vars(r)["token"]
+
+	if err := ctx.M(r).DB("").C("tokens").Remove(bson.M{
+		"user_id": user.ID,
+		"token":   t,
+	}); err != nil && err != mgo.ErrNotFound {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func DeleteAllTokensHandler(w http.ResponseWriter, r *http.Request) {
+	user := ctx.CurrentUser(r)
+
+	if _, err := ctx.M(r).DB("").C("tokens").RemoveAll(bson.M{
+		"user_id": user.ID,
+	}); err != nil && err != mgo.ErrNotFound {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

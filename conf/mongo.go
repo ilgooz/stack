@@ -18,6 +18,8 @@ func ensureIndex() {
 	s := M.Copy()
 	defer s.Close()
 
+	s.SetSafe(&mgo.Safe{})
+
 	// users indexes
 	uc := s.DB("").C("users")
 

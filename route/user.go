@@ -121,7 +121,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := model.NewToken(user.ID)
+	token := model.NewToken(user.ID, false)
 
 	if err := ctx.M(r).DB("").C("tokens").Insert(&token); err != nil {
 		log.Println(err)

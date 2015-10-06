@@ -33,6 +33,8 @@ func handler() http.Handler {
 	r.Methods("GET").Path("/me").Handler(authChain.ThenFunc(route.GetMeHandler))
 
 	r.Methods("POST").Path("/tokens").Handler(appChain.ThenFunc(route.CreateTokenHandler))
+	r.Methods("DELETE").Path("/tokens").Handler(authChain.ThenFunc(route.DeleteAllTokensHandler))
+	r.Methods("DELETE").Path("/tokens/{token}").Handler(authChain.ThenFunc(route.DeleteTokenHandler))
 
 	r.Methods("GET").Path("/version").Handler(appChain.ThenFunc(VersionHandler))
 

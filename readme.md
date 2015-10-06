@@ -27,10 +27,14 @@
 
 ### Out of The Box Endpoints
 * post /users
+* get /me
 * get /users
 * get /users/{id}
-* get /me
+
 * post /tokens
+* delete /tokens
+* delete /tokens/{token}
+
 * get /version
 
 ### Authentication

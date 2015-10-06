@@ -12,14 +12,19 @@ type Token struct {
 	ID        bson.ObjectId `bson:"_id,omitempty"`
 	UserID    bson.ObjectId `bson:"user_id"`
 	Token     string
-	UpdatedAt time.Time `bson:"updated_at"`
+	UpdatedAt time.Time `bson:"updated_at,omitempty"`
 }
 
-func NewToken(userID bson.ObjectId) Token {
-	return Token{
-		ID:        bson.NewObjectId(),
-		UserID:    userID,
-		Token:     cryptoutils.RandToken(conf.TokenSize),
-		UpdatedAt: time.Now(),
+func NewToken(userID bson.ObjectId, forever bool) Token {
+	token := Token{
+		ID:     bson.NewObjectId(),
+		UserID: userID,
+		Token:  cryptoutils.RandToken(conf.TokenSize),
 	}
+
+	if !forever {
+		token.UpdatedAt = time.Now()
+	}
+
+	return token
 }
